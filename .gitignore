@@ -1,0 +1,20 @@
+# Ignore compiled files
+target/
+out/
+*.class
+
+# Ignore IntelliJ IDEA files
+.idea/
+*.iml
+
+# Ignore Maven files
+.log
+*.log
+!pom.xml
+
+# Ignore operating system files
+.DS_Store
+Thumbs.db
+
+# Ignore application properties (if any)
+*.properties
