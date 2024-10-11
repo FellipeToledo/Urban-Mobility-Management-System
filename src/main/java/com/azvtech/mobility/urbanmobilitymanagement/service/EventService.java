@@ -1,15 +1,19 @@
 package com.azvtech.mobility.urbanmobilitymanagement.service;
 
+import com.azvtech.mobility.urbanmobilitymanagement.enums.Severity;
+import com.azvtech.mobility.urbanmobilitymanagement.enums.Status;
 import com.azvtech.mobility.urbanmobilitymanagement.model.Event;
 import com.azvtech.mobility.urbanmobilitymanagement.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class EventService {
 
     private final EventRepository eventRepository;
@@ -28,23 +32,15 @@ public class EventService {
     }
 
     public Event createEvent(Event event) {
-        event.setRegistrationDateTime(LocalDateTime.now());
+        setDefaultValues(event);
         return eventRepository.save(event);
     }
 
     public Optional<Event> updateEvent(Long id, Event updatedEvent) {
         return eventRepository.findById(id)
-                .map(event ->  {
-                    event.setDescription(updatedEvent.getDescription());
-                    event.setLocation(updatedEvent.getLocation());
-                    event.setRegistrationDateTime(updatedEvent.getRegistrationDateTime());
-                    event.setStartDateTime(updatedEvent.getStartDateTime());
-                    event.setEndDateTime(updatedEvent.getEndDateTime());
-                    event.setSeverity(updatedEvent.getSeverity());
-                    event.setStatus(updatedEvent.getStatus());
-                    event.setImpactTransit(updatedEvent.getImpactTransit());
-                    event.setRoadBlock(updatedEvent.isRoadBlock());
-                    return eventRepository.save(event);
+                .map(existingEvent -> {
+                    updateEventFields(existingEvent, updatedEvent);
+                    return eventRepository.save(existingEvent);
                 });
     }
 
@@ -54,5 +50,26 @@ public class EventService {
                     eventRepository.deleteById(id);
                     return true;
                 }).orElse(false);  // Return false if the event doesn't exist
+    }
+
+    private void setDefaultValues(Event event) {
+        if (event.getRegistrationDateTime() == null) {
+            event.setRegistrationDateTime(LocalDateTime.now());
+        }
+        if (event.getSeverity() == null) {
+            event.setSeverity(Severity.LOW);
+        }
+        if (event.getStatus() == null) {
+            event.setStatus(Status.PENDING);
+        }
+    }
+
+    private void updateEventFields(Event existingEvent, Event updatedEvent) {
+        existingEvent.setDescription(updatedEvent.getDescription());
+        existingEvent.setStartDateTime(updatedEvent.getStartDateTime());
+        existingEvent.setEndDateTime(updatedEvent.getEndDateTime());
+        existingEvent.setLocation(updatedEvent.getLocation());
+        existingEvent.setSeverity(updatedEvent.getSeverity());
+        existingEvent.setStatus(updatedEvent.getStatus());
     }
 }

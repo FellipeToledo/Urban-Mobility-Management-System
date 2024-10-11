@@ -28,18 +28,16 @@ public class Event {
     @Column(name = "start_date_time", nullable = false)
     private LocalDateTime startDateTime;
 
-    @Column(name = "end_date_time")
+    @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
 
     @Column(nullable = false)
     private String location;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Severity severity;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Status status;
 
     @Column(name = "impact_transit")
