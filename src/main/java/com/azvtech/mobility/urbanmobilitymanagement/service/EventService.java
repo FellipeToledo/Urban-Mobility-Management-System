@@ -5,6 +5,7 @@ import com.azvtech.mobility.urbanmobilitymanagement.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ public class EventService {
     }
 
     public Event createEvent(Event event) {
+        event.setRegistrationDateTime(LocalDateTime.now());
         return eventRepository.save(event);
     }
 
@@ -35,11 +37,13 @@ public class EventService {
                 .map(event ->  {
                     event.setDescription(updatedEvent.getDescription());
                     event.setLocation(updatedEvent.getLocation());
-                    event.setDateTime(updatedEvent.getDateTime());
+                    event.setRegistrationDateTime(updatedEvent.getRegistrationDateTime());
+                    event.setStartDateTime(updatedEvent.getStartDateTime());
+                    event.setEndDateTime(updatedEvent.getEndDateTime());
                     event.setSeverity(updatedEvent.getSeverity());
                     event.setStatus(updatedEvent.getStatus());
                     event.setImpactTransit(updatedEvent.getImpactTransit());
-                    event.setRoadblock(updatedEvent.isRoadblock());
+                    event.setRoadBlock(updatedEvent.isRoadBlock());
                     return eventRepository.save(event);
                 });
     }
