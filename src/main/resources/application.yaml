@@ -1,0 +1,9 @@
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  info:
+    title: Urban Mobility Management API
+    description: API para gerenciamento de eventos e mobilidade urbana.
+    version: v1.0
