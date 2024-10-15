@@ -1,3 +1,4 @@
+#Swagger
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -7,3 +8,14 @@ springdoc:
     title: Urban Mobility Management API
     description: API para gerenciamento de eventos e mobilidade urbana.
     version: v1.0
+
+
+#Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
