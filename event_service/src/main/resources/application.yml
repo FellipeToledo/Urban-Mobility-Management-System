@@ -1,0 +1,30 @@
+info:
+  name: Event Service
+  artifact: event-service
+  group: com.azvtech
+  description: Api de gestão de eventos programados e não programados.
+  version: 0.0.1-SNAPSHOT
+  company:
+    name: AzvTech Solutions.
+
+#Swagger
+springdoc:
+  api-docs:
+    path: /v1/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+#Actuator
+management:
+  info:
+    java:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+

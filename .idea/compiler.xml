@@ -8,11 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="urban-mobility-management-system" />
+        <module name="event_service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="event_service" options="-parameters" />
       <module name="urban-mobility-management-system" options="-parameters" />
     </option>
   </component>
