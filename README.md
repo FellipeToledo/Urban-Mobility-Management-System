@@ -107,5 +107,3 @@ um 👍. Isso me ajuda a priorizar o que trabalhar.
 [requests]: https://github.com/FellipeToledo/Urban-Mobility-Management-System/issues?q=is%3Aissue+sort%3Areactions-%2B1-desc+label%3Aenhancement+is%3Aopen
 [good-first-issue]: https://github.com/FellipeToledo/Urban-Mobility-Management-System/issues?utf8=✓&q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc+label%3A"good+first+issue"+
 
-
-<!-- prettier-ignore-end -->
