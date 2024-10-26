@@ -39,7 +39,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        service: [ "Event-Service" ] # Adicione mais serviços à lista quando necessário
+        service: [ "event_service" ] # Adicione mais serviços à lista quando necessário
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
