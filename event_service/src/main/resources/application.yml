@@ -2,7 +2,7 @@ info:
   name: Event Service
   artifact: event-service
   group: com.azvtech
-  description: Api de gest„o de eventos programados e n„o programados.
+  description: Api de gest√£o de eventos programados e n√£o programados.
   version: 0.0.1-SNAPSHOT
   company:
     name: AzvTech Solutions.
