@@ -66,16 +66,21 @@ jobs:
   publish-test-results:
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: always()
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Check for test reports
+        run: |
+          if [ -d target/surefire-reports ] && [ "$(ls -A target/surefire-reports/*.xml 2>/dev/null)" ]; then
+            echo "Test reports found."
+          else
+            echo "No test reports found."
+          fi
 
-      - name: Archive test reports
+      - name: Archive test results
+        if: success() && steps.check-test-reports.outputs.test-reports-exist == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
-          path: "**/target/surefire-reports/*.xml"
+          name: test-results
+          path: target/surefire-reports/*.xml
 
   # Step 4: Deploy to Dev Environment (Opcional)
   deploy:
