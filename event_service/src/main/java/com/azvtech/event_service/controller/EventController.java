@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,27 +85,27 @@ public class EventController {
             @ApiResponse(responseCode = "200", description = "Evento atualizado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
     })
-        @PutMapping("/scheduled/{id}")
-        public ResponseEntity<?> updateScheduledEvent(
-                @Parameter(description = "ID do evento a ser atualizado")
-                @PathVariable Long id,
-                @RequestBody ScheduledEvent scheduledEvent) {
-            try {
-                Optional<Event> updatedEvent = eventService.updateEventFields(id, scheduledEvent);
+    @PutMapping("/scheduled/{id}")
+    public ResponseEntity<?> updateScheduledEvent(
+            @Parameter(description = "ID do evento a ser atualizado")
+            @PathVariable Long id,
+            @RequestBody ScheduledEvent scheduledEvent) {
+        try {
+            Optional<Event> updatedEvent = eventService.updateEventFields(id, scheduledEvent);
 
-                // Verifica se o evento foi atualizado com sucesso
-                if (updatedEvent.isPresent()) {
-                    return ResponseEntity.ok(updatedEvent.get());
-                } else {
-                    return ResponseEntity.notFound().build(); // Evento não encontrado
-                }
-
-            } catch (ClassCastException e) {
-                return ResponseEntity.badRequest().body("O evento com o ID fornecido não é do tipo EventoProgramado");
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body("Erro ao atualizar o evento: " + e.getMessage());
+            // Verifica se o evento foi atualizado com sucesso
+            if (updatedEvent.isPresent()) {
+                return ResponseEntity.ok(updatedEvent.get());
+            } else {
+                return ResponseEntity.notFound().build(); // Evento não encontrado
             }
+
+        } catch (ClassCastException e) {
+            return ResponseEntity.badRequest().body("O evento com o ID fornecido não é do tipo EventoProgramado");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao atualizar o evento: " + e.getMessage());
         }
+    }
 
     @Operation(summary = "Atualizar um evento não programado existente")
     @ApiResponses(value = {
@@ -146,4 +147,84 @@ public class EventController {
                 ResponseEntity.noContent().build() :
                 ResponseEntity.notFound().build();
     }
+
+    @Operation(summary = "Buscar eventos programados por data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de eventos programados recuperada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Nenhum evento programado encontrado")
+    })
+    @GetMapping("/scheduled/date/{date}")
+    public ResponseEntity<List<ScheduledEvent>> findScheduledEventsByDate(
+            @Parameter(description = "Data do evento programado")
+            @PathVariable String date) {
+        List<ScheduledEvent> events = eventService.findScheduledEventsByDate(LocalDate.parse(date));
+        return events.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(events);
+    }
+
+    @Operation(summary = "Buscar eventos programados por bairro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de eventos programados recuperada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Nenhum evento programado encontrado")
+    })
+    @GetMapping("/scheduled/neighborhood/{neighborhood}")
+    public ResponseEntity<List<ScheduledEvent>> findScheduledEventsByNeighborhood(
+            @Parameter(description = "Bairro do evento programado")
+            @PathVariable String neighborhood) {
+        List<ScheduledEvent> events = eventService.findScheduledEventsByNeighborhood(neighborhood);
+        return events.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/unscheduled/category/{category}")
+    public ResponseEntity<List<UnscheduledEvent>> findUnscheduledEventsByCategory(
+            @Parameter(description = "Categoria do evento não programado")
+            @PathVariable String category) {
+        List<UnscheduledEvent> events = eventService.findUnscheduledEventsByCategory(category);
+        return events.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(events);
+    }
+    @GetMapping("/unscheduled/severity/{severity}")
+    public ResponseEntity<List<UnscheduledEvent>> findUnscheduledEventsBySeverity(
+            @Parameter(description = "Severidade do evento não programado")
+            @PathVariable String severity) {
+        List<UnscheduledEvent> events = eventService.findUnscheduledEventsBySeverity(severity);
+        return events.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(events);
+    }
+
+    @Operation(summary = "Buscar eventos por status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de eventos recuperada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Nenhum evento encontrado")
+    })
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Event>> findEventsByStatus(
+            @Parameter(description = "Status do evento")
+            @PathVariable String status) {
+        List<Event> events = eventService.findEventsByStatus(status);
+        return events.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(events);
+    }
+
+    @Operation(summary = "Buscar eventos por severidade")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de eventos recuperada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Nenhum evento encontrado")
+    })
+    @GetMapping("/severity/{severity}")
+    public ResponseEntity<List<Event>> findEventsBySeverity(
+            @Parameter(description = "Severidade do evento")
+            @PathVariable String severity) {
+        List<Event> events = eventService.findEventsBySeverity(severity);
+        return events.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(events);
+    }
+
 }
