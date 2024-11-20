@@ -136,12 +136,14 @@ public class EventService {
     }
 
     public List<EventDto> findEventsByStatus(String status) {
-        List<Event> events = eventDAO.findEventsByStatus(status);
+        Status eventStatus = Status.valueOf(status.toUpperCase());
+        List<Event> events = eventDAO.findEventsByStatus(eventStatus);
         return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
     }
 
     public List<EventDto> findEventsBySeverity(String severity) {
-        List<Event> events = eventDAO.findEventsBySeverity(severity);
+        Severity eventSeverity = Severity.valueOf(severity.toUpperCase());
+        List<Event> events = eventDAO.findEventsBySeverity(eventSeverity);
         return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
     }
 
@@ -150,9 +152,5 @@ public class EventService {
         return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
     }
 
-    public List<UnscheduledEventDto> findUnscheduledEventsBySeverity(String severity) {
-        List<UnscheduledEvent> events = unscheduledEventDAO.findUnscheduledEventsBySeverity(severity);
-        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
-    }
 
 }

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.*;
 
+import com.azvtech.event_service.enums.Severity;
+import com.azvtech.event_service.enums.Status;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
@@ -40,7 +42,7 @@ public class EventDAOTest {
         when(query.setParameter(anyString(), eq(status))).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(new Event()));
 
-        List<Event> result = eventDAO.findEventsByStatus(status);
+        List<Event> result = eventDAO.findEventsByStatus(Status.valueOf(status));
 
         assertNotNull(result);
         assertFalse(result.isEmpty(), "Deve retornar ao menos um evento para o status informado");
@@ -55,7 +57,7 @@ public class EventDAOTest {
         when(query.setParameter(anyString(), eq(severity))).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(new Event()));
 
-        List<Event> result = eventDAO.findEventsBySeverity(severity);
+        List<Event> result = eventDAO.findEventsBySeverity(Severity.valueOf(severity));
 
         assertNotNull(result);
         assertFalse(result.isEmpty(), "Deve retornar ao menos um evento para a severidade informada");

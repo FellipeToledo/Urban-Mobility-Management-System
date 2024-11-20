@@ -26,7 +26,7 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @Operation(summary = "Criar um novo evento")
+    @Operation(summary = "Criar um novo evento programado")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Evento criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos para criar o evento")
@@ -42,6 +42,11 @@ public class EventController {
                 .body(newScheduledEvent);
     }
 
+    @Operation(summary = "Criar um novo evento não programado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Evento criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos para criar o evento")
+    })
     @PostMapping("/unscheduled")
     public ResponseEntity<UnscheduledEventDto> createUnscheduledEvent(
             @Valid
@@ -186,15 +191,6 @@ public class EventController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(events);
     }
-    @GetMapping("/unscheduled/severity/{severity}")
-    public ResponseEntity<List<UnscheduledEventDto>> findUnscheduledEventsBySeverity(
-            @Parameter(description = "Severidade do evento não programado")
-            @PathVariable String severity) {
-        List<UnscheduledEventDto> events = eventService.findUnscheduledEventsBySeverity(severity);
-        return events.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(events);
-    }
 
     @Operation(summary = "Buscar eventos por status")
     @ApiResponses(value = {
@@ -205,10 +201,14 @@ public class EventController {
     public ResponseEntity<List<EventDto>> findEventsByStatus(
             @Parameter(description = "Status do evento")
             @PathVariable String status) {
-        List<EventDto> events = eventService.findEventsByStatus(status);
-        return events.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(events);
+        try {
+            List<EventDto> events = eventService.findEventsByStatus(status);
+            return events.isEmpty()
+                    ? ResponseEntity.noContent().build()
+                    : ResponseEntity.ok(events);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null); // Retornar erro 400 se o status for inválido
+        }
     }
 
     @Operation(summary = "Buscar eventos por severidade")
