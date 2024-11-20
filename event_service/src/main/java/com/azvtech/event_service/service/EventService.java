@@ -24,9 +24,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service for managing events, both scheduled and unscheduled.
+ */
 @Service
 @Transactional
 public class EventService {
+
+    private static final Severity DEFAULT_SEVERITY = Severity.LOW;
+    private static final Status DEFAULT_STATUS = Status.PENDING;
 
     private final EventRepository eventRepository;
     private final EventDAO eventDAO;
@@ -43,14 +49,25 @@ public class EventService {
         this.eventMapper = eventMapper;
     }
 
-    public List<EventDto> findAllEvents() {
+    public List<EventDto> getAllEvents() {
         List<Event> events = eventRepository.findAll();
         return events.stream()
                 .map(eventMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public Optional<EventDto> findEventById(Long id) {
+    public List<EventDto> getEventsByRoadblock(String road) {
+        List<Event> events = eventRepository.findAll();
+        List<Event> filteredEvents = events.stream()
+                .filter(event -> event.getRoadblocks().stream()
+                        .anyMatch(roadblock -> roadblock.getRoad().equalsIgnoreCase(road)))
+                .toList();
+        return filteredEvents.stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<EventDto> getEventById(Long id) {
         return eventRepository.findById(id).map(eventMapper::toDto);
     }
 
@@ -69,23 +86,15 @@ public class EventService {
     }
 
     public Optional<EventDto> updateEventFields(Long id, EventDto eventDTO) {
-        Optional<Event> existingEvent = eventRepository.findById(id);
-
-        if (existingEvent.isPresent()) {
-            Event event = existingEvent.get();
-
-            updateCommonFields(event, eventDTO);
-
-            if (event instanceof ScheduledEvent && eventDTO instanceof ScheduledEventDto) {
-                updateScheduledEventFields((ScheduledEvent) event, (ScheduledEventDto) eventDTO);
-                return Optional.of(eventMapper.toDto(eventRepository.save((ScheduledEvent) event)));
-            } else if (event instanceof UnscheduledEvent && eventDTO instanceof UnscheduledEventDto) {
-                updateUnscheduledEventFields((UnscheduledEvent) event, (UnscheduledEventDto) eventDTO);
-                return Optional.of(eventMapper.toDto(eventRepository.save((UnscheduledEvent) event)));
+        return eventRepository.findById(id).map(existingEvent -> {
+            updateCommonFields(existingEvent, eventDTO);
+            if (existingEvent instanceof ScheduledEvent && eventDTO instanceof ScheduledEventDto) {
+                updateScheduledEventFields((ScheduledEvent) existingEvent, (ScheduledEventDto) eventDTO);
+            } else if (existingEvent instanceof UnscheduledEvent && eventDTO instanceof UnscheduledEventDto) {
+                updateUnscheduledEventFields((UnscheduledEvent) existingEvent, (UnscheduledEventDto) eventDTO);
             }
-        }
-
-        return Optional.empty();
+            return eventMapper.toDto(eventRepository.save(existingEvent));
+        });
     }
 
     public boolean deleteEvent(Long id) {
@@ -118,39 +127,42 @@ public class EventService {
             event.setRegistrationDateTime(LocalDateTime.now());
         }
         if (event.getSeverity() == null) {
-            event.setSeverity(Severity.LOW);
+            event.setSeverity(DEFAULT_SEVERITY);
         }
         if (event.getStatus() == null) {
-            event.setStatus(Status.PENDING);
+            event.setStatus(DEFAULT_STATUS);
         }
     }
 
-    public List<ScheduledEventDto> findScheduledEventsByDate(LocalDate date) {
-        List<ScheduledEvent> events = scheduledEventDAO.findScheduledEventsByDate(date);
-        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
+    public List<ScheduledEventDto> getScheduledEventsByDate(LocalDate date) {
+        return scheduledEventDAO.findScheduledEventsByDate(date).stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<ScheduledEventDto> findScheduledEventsByNeighborhood(String neighborhood) {
-        List<ScheduledEvent> events = scheduledEventDAO.findScheduledEventsByNeighborhood(neighborhood);
-        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
+    public List<ScheduledEventDto> getScheduledEventsByNeighborhood(String neighborhood) {
+        return scheduledEventDAO.findScheduledEventsByNeighborhood(neighborhood).stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<EventDto> findEventsByStatus(String status) {
+    public List<EventDto> getEventsByStatus(String status) {
         Status eventStatus = Status.valueOf(status.toUpperCase());
-        List<Event> events = eventDAO.findEventsByStatus(eventStatus);
-        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
+        return eventDAO.findEventsByStatus(eventStatus).stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<EventDto> findEventsBySeverity(String severity) {
+    public List<EventDto> getEventsBySeverity(String severity) {
         Severity eventSeverity = Severity.valueOf(severity.toUpperCase());
-        List<Event> events = eventDAO.findEventsBySeverity(eventSeverity);
-        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
+        return eventDAO.findEventsBySeverity(eventSeverity).stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<UnscheduledEventDto> findUnscheduledEventsByCategory(String category) {
-        List<UnscheduledEvent> events = unscheduledEventDAO.findUnscheduledEventsByCategory(category);
-        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
+    public List<UnscheduledEventDto> getUnscheduledEventsByCategory(String category) {
+        return unscheduledEventDAO.findUnscheduledEventsByCategory(category).stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
     }
-
-
 }
