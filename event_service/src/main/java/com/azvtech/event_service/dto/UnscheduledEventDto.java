@@ -14,6 +14,6 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UnscheduledEventDto extends EventDto{
 
-    @NotNull
+    @NotNull(message = "Category cannot be null")
     private String category;
 }

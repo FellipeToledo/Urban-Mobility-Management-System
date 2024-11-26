@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,15 +16,12 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ScheduledEventDto extends EventDto{
 
-    @NotNull
-    private String regulationId;
+    @NotNull(message = "Regulation Number cannot be null")
+    private Integer regulationNumber;
 
-    @NotNull
+    @NotNull(message = "Regulation date cannot be null")
     private LocalDate regulationDate;
 
-    @NotNull
-    private LocalDateTime roadblockDate;
-
-    @NotNull
+    @NotNull(message = "Neighborhood cannot be null")
     private String neighborhood;
 }
