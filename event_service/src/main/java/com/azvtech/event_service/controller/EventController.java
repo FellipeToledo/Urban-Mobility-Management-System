@@ -33,7 +33,7 @@ public class EventController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos para criar o evento")
     })
     @PostMapping("/scheduled")
-    public ResponseEntity<ScheduledEventDto> createScheduledEvent(
+    public ResponseEntity<Boolean> createScheduledEvent(
             @Valid @RequestBody ScheduledEventDto scheduledEvent) {
         return createEventResponse(eventService.createScheduledEvent(scheduledEvent));
     }

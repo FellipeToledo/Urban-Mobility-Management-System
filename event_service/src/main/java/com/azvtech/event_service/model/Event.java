@@ -4,7 +4,6 @@ import com.azvtech.event_service.enums.Severity;
 import com.azvtech.event_service.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -19,13 +19,10 @@ import java.time.LocalDateTime;
 public class ScheduledEvent extends Event{
 
     @Column(nullable = false)
-    private String regulationId;
+    private Integer regulationNumber;
 
     @Column(nullable = false)
     private LocalDate regulationDate;
-
-    @Column(nullable = false)
-    private LocalDateTime roadblockDate;
 
     @Column(nullable = false)
     private String neighborhood;
