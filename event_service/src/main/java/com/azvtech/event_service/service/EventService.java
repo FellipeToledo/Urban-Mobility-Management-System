@@ -6,9 +6,10 @@ import com.azvtech.event_service.dao.UnscheduledEventDAO;
 import com.azvtech.event_service.dto.CreateEventDto;
 import com.azvtech.event_service.dto.ScheduledCreateEventDto;
 import com.azvtech.event_service.dto.UnscheduledCreateEventDto;
+import com.azvtech.event_service.enums.Cause;
 import com.azvtech.event_service.enums.Severity;
 import com.azvtech.event_service.enums.Status;
-import com.azvtech.event_service.mapper.EventMapper;
+import com.azvtech.event_service.dto.mapper.EventMapper;
 import com.azvtech.event_service.model.Event;
 import com.azvtech.event_service.model.ScheduledEvent;
 import com.azvtech.event_service.model.UnscheduledEvent;
@@ -119,12 +120,12 @@ public class EventService {
 
     private void updateScheduledEventFields(ScheduledEvent existingEvent, ScheduledCreateEventDto scheduledEventDTO) {
         existingEvent.setNeighborhood(scheduledEventDTO.getNeighborhood());
-        existingEvent.setRegulationDate(scheduledEventDTO.getRegulationDate());
+        existingEvent.setRegulationPublicationDate(scheduledEventDTO.getRegulationPublicationDate());
         existingEvent.setRegulationNumber(scheduledEventDTO.getRegulationNumber());
     }
 
     private void updateUnscheduledEventFields(UnscheduledEvent existingEvent, UnscheduledCreateEventDto unscheduledEventDTO) {
-        existingEvent.setCategory(unscheduledEventDTO.getCategory());
+        existingEvent.setCause(unscheduledEventDTO.getCause());
     }
 
     private void setDefaultValues(Event event) {
@@ -159,8 +160,8 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public List<UnscheduledCreateEventDto> getUnscheduledEventsByCategory(String category) {
-        return unscheduledEventDAO.findUnscheduledEventsByCategory(category).stream()
+    public List<UnscheduledCreateEventDto> getUnscheduledEventsByCause(Cause cause) {
+        return unscheduledEventDAO.findUnscheduledEventsByCause(cause).stream()
                 .map(eventMapper::unscheduledEventToDto)
                 .collect(Collectors.toList());
     }

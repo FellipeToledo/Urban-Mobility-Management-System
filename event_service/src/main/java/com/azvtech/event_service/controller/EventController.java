@@ -3,6 +3,7 @@ package com.azvtech.event_service.controller;
 import com.azvtech.event_service.dto.CreateEventDto;
 import com.azvtech.event_service.dto.ScheduledCreateEventDto;
 import com.azvtech.event_service.dto.UnscheduledCreateEventDto;
+import com.azvtech.event_service.enums.Cause;
 import com.azvtech.event_service.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -181,11 +182,11 @@ public class EventController {
                 : ResponseEntity.ok(events);
     }
 
-    @GetMapping("/unscheduled/category/{category}")
+    @GetMapping("/unscheduled/cause/{cause}")
     public ResponseEntity<List<UnscheduledCreateEventDto>> findUnscheduledEventsByCategory(
-            @Parameter(description = "Categoria do evento não programado")
-            @PathVariable String category) {
-        List<UnscheduledCreateEventDto> events = eventService.getUnscheduledEventsByCategory(category);
+            @Parameter(description = "Causa do evento não programado")
+            @PathVariable Cause cause) {
+        List<UnscheduledCreateEventDto> events = eventService.getUnscheduledEventsByCause(cause);
         return events.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(events);

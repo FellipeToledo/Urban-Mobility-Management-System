@@ -4,15 +4,27 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Severity {
-    LOW("Low", 1),
-    MEDIUM("Medium", 2),
-    HIGH("High", 3),
-    CRITICAL("Critical", 4);
+    UNDEFINED("Indefinida", 0),
+    LOW("Leve",1),
+    MEDIUM("Moderada",2),
+    HIGH("Grave",3),
+    CRITICAL("Crítica",4);
 
     private final String displayName;
     @Getter
     private final int level;
+    private static final Map<String, Severity> LOOKUP_MAP = new HashMap<>();
+
+    static {
+        for (Severity severity : values()) {
+            LOOKUP_MAP.put(severity.name().toLowerCase(), severity);
+            LOOKUP_MAP.put(severity.displayName.toLowerCase(), severity);
+        }
+    }
 
     Severity(String displayName, int level) {
         this.displayName = displayName;
@@ -26,25 +38,24 @@ public enum Severity {
 
     @JsonCreator
     public static Severity fromString(String value) {
-        for (Severity severity : Severity.values()) {
-            if (severity.name().equalsIgnoreCase(value) || severity.getDisplayName().equalsIgnoreCase(value)) {
-                return severity;
-            }
+        if (value == null) {
+            throw new IllegalArgumentException("Severity value cannot be null");
         }
-        throw new IllegalArgumentException("Invalid Severity: " + value);
+
+        Severity severity = LOOKUP_MAP.get(value.toLowerCase());
+        if (severity == null) {
+            throw new IllegalArgumentException("Invalid Severity: " + value);
+        }
+        return severity;
     }
 
+    // Optional: Add method to find by level if needed
     public static Severity fromLevel(int level) {
-        for (Severity severity : Severity.values()) {
+        for (Severity severity : values()) {
             if (severity.getLevel() == level) {
                 return severity;
             }
         }
         throw new IllegalArgumentException("Invalid Severity level: " + level);
-    }
-
-    @Override
-    public String toString() {
-        return this.displayName;
     }
 }

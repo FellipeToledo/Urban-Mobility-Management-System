@@ -1,4 +1,4 @@
-package com.azvtech.event_service.mapper;
+package com.azvtech.event_service.dto.mapper;
 
 import com.azvtech.event_service.dto.CreateEventDto;
 import com.azvtech.event_service.dto.ScheduledCreateEventDto;

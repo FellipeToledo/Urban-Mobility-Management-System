@@ -21,6 +21,5 @@ public class ScheduledCreateEventDto extends CreateEventDto {
     private int regulationNumber;
 
     @NotNull(message = "Regulation date cannot be null")
-    @Future(message = "Regulation date must be in the future")
-    private LocalDate regulationDate;
+    private LocalDate regulationPublicationDate;
 }

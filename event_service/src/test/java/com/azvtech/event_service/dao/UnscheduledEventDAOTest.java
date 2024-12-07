@@ -2,6 +2,7 @@ package com.azvtech.event_service.dao;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.azvtech.event_service.enums.Cause;
 import com.azvtech.event_service.model.UnscheduledEvent;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -31,14 +32,14 @@ public class UnscheduledEventDAOTest {
     }
 
     @Test
-    void testFindUnscheduledEventsByCategory() {
-        String category = "Accident";
-        when(entityManager.createQuery("SELECT ue FROM UnscheduledEvent ue WHERE ue.category = :category", UnscheduledEvent.class))
+    void testFindUnscheduledEventsByCause() {
+        Cause cause = Cause.ACCIDENT;
+        when(entityManager.createQuery("SELECT ue FROM UnscheduledEvent ue WHERE ue.cause = :cause", UnscheduledEvent.class))
                 .thenReturn(query);
-        when(query.setParameter("category", category)).thenReturn(query);
+        when(query.setParameter("cause", cause)).thenReturn(query);
         when(query.getResultList()).thenReturn(List.of(new UnscheduledEvent()));
 
-        List<UnscheduledEvent> events = unscheduledEventDAO.findUnscheduledEventsByCategory(category);
+        List<UnscheduledEvent> events = unscheduledEventDAO.findUnscheduledEventsByCause(cause);
 
         assertEquals(1, events.size());
         verify(entityManager, times(1)).createQuery("SELECT ue FROM UnscheduledEvent ue WHERE ue.category = :category", UnscheduledEvent.class);

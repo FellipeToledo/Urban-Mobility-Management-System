@@ -1,5 +1,6 @@
 package com.azvtech.event_service.dao;
 
+import com.azvtech.event_service.enums.Cause;
 import com.azvtech.event_service.model.UnscheduledEvent;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -13,10 +14,10 @@ public class UnscheduledEventDAO {
     @PersistenceContext
     private EntityManager entityManager;
 
-    // Busca de eventos não programados por categoria (ex: acidente, protesto)
-    public List<UnscheduledEvent> findUnscheduledEventsByCategory(String category) {
-        return entityManager.createQuery("SELECT ue FROM UnscheduledEvent ue WHERE ue.category = :category", UnscheduledEvent.class)
-                .setParameter("category", category)
+    // Busca de eventos não programados por causa (ex: acidente, protesto)
+    public List<UnscheduledEvent> findUnscheduledEventsByCause(Cause cause) {
+        return entityManager.createQuery("SELECT ue FROM UnscheduledEvent ue WHERE ue.cause = :cause", UnscheduledEvent.class)
+                .setParameter("cause", cause)
                 .getResultList();
     }
 

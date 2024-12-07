@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@NoArgsConstructor
+
 @AllArgsConstructor
 @Entity
 @Table(name = "scheduled_event")
@@ -21,6 +21,6 @@ public class ScheduledEvent extends Event{
     private int regulationNumber;
 
     @Column(nullable = false)
-    private LocalDate regulationDate;
+    private LocalDate regulationPublicationDate;
 
 }
