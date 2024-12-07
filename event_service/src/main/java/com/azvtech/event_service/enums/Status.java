@@ -3,14 +3,28 @@ package com.azvtech.event_service.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Status {
-    PENDING("Pending"),
-    OPEN("Open"),
-    IN_PROGRESS("In Progress"),
-    CLOSED("Closed"),
-    CANCELED("Canceled");
+    PLANNING("Planejamento"),
+    ACTIVE("Ativo"),
+    SUSPENDED("Suspenso"),
+    IN_ANALYSIS("Em Análise"),
+    UNCONFIRMED("Não Confirmado"),
+    MONITORING("Monitoramento"),
+    CLOSED("Encerrado"),
+    CANCELED("Cancelado");
 
     private final String displayName;
+    private static final Map<String, Status> LOOKUP_MAP = new HashMap<>();
+
+    static {
+        for (Status status : values()) {
+            LOOKUP_MAP.put(status.name().toLowerCase(), status);
+            LOOKUP_MAP.put(status.displayName.toLowerCase(), status);
+        }
+    }
 
     Status(String displayName) {
         this.displayName = displayName;
@@ -23,16 +37,13 @@ public enum Status {
 
     @JsonCreator
     public static Status fromString(String value) {
-        for (Status status : Status.values()) {
-            if (status.name().equalsIgnoreCase(value) || status.getDisplayName().equalsIgnoreCase(value)) {
-                return status;
-            }
+        if (value == null) {
+            throw new IllegalArgumentException("Status value cannot be null");
         }
-        throw new IllegalArgumentException("Invalid Status: " + value);
-    }
-
-    @Override
-    public String toString() {
-        return this.displayName;
+        Status status = LOOKUP_MAP.get(value.toLowerCase());
+        if (status == null) {
+            throw new IllegalArgumentException("Invalid Status: " + value);
+        }
+        return status;
     }
 }

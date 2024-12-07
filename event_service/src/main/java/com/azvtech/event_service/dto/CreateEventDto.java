@@ -23,7 +23,7 @@ import java.util.List;
 public class CreateEventDto {
 
     @NotNull(message = "Description cannot be null")
-    @Size(min = 5, max = 25, message = "Description must be between 5 and 25 characters")
+    @Size(min = 5, max = 100, message = "Description must be between 5 and 100 characters")
     @NotBlank(message = "Description cannot be blank")
     private String description;
 
