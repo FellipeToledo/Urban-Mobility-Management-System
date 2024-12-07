@@ -1,7 +1,7 @@
 package com.azvtech.event_service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,14 +14,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ScheduledEventDto extends EventDto{
+public class ScheduledCreateEventDto extends CreateEventDto {
 
     @NotNull(message = "Regulation Number cannot be null")
-    private Integer regulationNumber;
+    @Positive(message = "Regulation Number must be a positive number")
+    private int regulationNumber;
 
     @NotNull(message = "Regulation date cannot be null")
+    @Future(message = "Regulation date must be in the future")
     private LocalDate regulationDate;
-
-    @NotNull(message = "Neighborhood cannot be null")
-    private String neighborhood;
 }

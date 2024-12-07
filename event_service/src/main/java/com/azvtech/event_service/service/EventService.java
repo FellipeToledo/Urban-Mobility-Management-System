@@ -3,9 +3,9 @@ package com.azvtech.event_service.service;
 import com.azvtech.event_service.dao.EventDAO;
 import com.azvtech.event_service.dao.ScheduledEventDAO;
 import com.azvtech.event_service.dao.UnscheduledEventDAO;
-import com.azvtech.event_service.dto.EventDto;
-import com.azvtech.event_service.dto.ScheduledEventDto;
-import com.azvtech.event_service.dto.UnscheduledEventDto;
+import com.azvtech.event_service.dto.CreateEventDto;
+import com.azvtech.event_service.dto.ScheduledCreateEventDto;
+import com.azvtech.event_service.dto.UnscheduledCreateEventDto;
 import com.azvtech.event_service.enums.Severity;
 import com.azvtech.event_service.enums.Status;
 import com.azvtech.event_service.mapper.EventMapper;
@@ -33,9 +33,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class EventService {
 
-    private static final Severity DEFAULT_SEVERITY = Severity.LOW;
-    private static final Status DEFAULT_STATUS = Status.PENDING;
-
     private static final Logger log = LoggerFactory.getLogger(EventService.class);
 
     private final EventRepository eventRepository;
@@ -53,14 +50,14 @@ public class EventService {
         this.eventMapper = eventMapper;
     }
 
-    public List<EventDto> getAllEvents() {
+    public List<CreateEventDto> getAllEvents() {
         List<Event> events = eventRepository.findAll();
         return events.stream()
                 .map(eventMapper::eventToDto)
                 .collect(Collectors.toList());
     }
 
-    public List<EventDto> getEventsByRoadblock(String road) {
+    public List<CreateEventDto> getEventsByRoadblock(String road) {
         List<Event> events = eventRepository.findAll();
         List<Event> filteredEvents = events.stream()
                 .filter(event -> event.getRoadblocks().stream()
@@ -71,11 +68,11 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<EventDto> getEventById(Long id) {
+    public Optional<CreateEventDto> getEventById(Long id) {
         return eventRepository.findById(id).map(eventMapper::eventToDto);
     }
 
-    public boolean createScheduledEvent(@Valid ScheduledEventDto scheduledEventDTO) {
+    public boolean createScheduledEvent(@Valid ScheduledCreateEventDto scheduledEventDTO) {
         try {
             ScheduledEvent scheduledEvent = eventMapper.scheduledEventToEntity(scheduledEventDTO);
             setDefaultValues(scheduledEvent);
@@ -88,20 +85,20 @@ public class EventService {
         }
     }
 
-    public UnscheduledEventDto createUnscheduledEvent(@Valid UnscheduledEventDto unscheduledEventDTO) {
+    public UnscheduledCreateEventDto createUnscheduledEvent(@Valid UnscheduledCreateEventDto unscheduledEventDTO) {
         UnscheduledEvent unscheduledEvent = eventMapper.unscheduledEventToEntity(unscheduledEventDTO);
         setDefaultValues(unscheduledEvent);
         UnscheduledEvent savedEvent = eventRepository.save(unscheduledEvent);
         return eventMapper.unscheduledEventToDto(savedEvent);
     }
 
-    public Optional<EventDto> updateEventFields(Long id, EventDto eventDTO) {
+    public Optional<CreateEventDto> updateEventFields(Long id, CreateEventDto createEventDTO) {
         return eventRepository.findById(id).map(existingEvent -> {
-            updateCommonFields(existingEvent, eventDTO);
-            if (existingEvent instanceof ScheduledEvent && eventDTO instanceof ScheduledEventDto) {
-                updateScheduledEventFields((ScheduledEvent) existingEvent, (ScheduledEventDto) eventDTO);
-            } else if (existingEvent instanceof UnscheduledEvent && eventDTO instanceof UnscheduledEventDto) {
-                updateUnscheduledEventFields((UnscheduledEvent) existingEvent, (UnscheduledEventDto) eventDTO);
+            updateCommonFields(existingEvent, createEventDTO);
+            if (existingEvent instanceof ScheduledEvent && createEventDTO instanceof ScheduledCreateEventDto) {
+                updateScheduledEventFields((ScheduledEvent) existingEvent, (ScheduledCreateEventDto) createEventDTO);
+            } else if (existingEvent instanceof UnscheduledEvent && createEventDTO instanceof UnscheduledCreateEventDto) {
+                updateUnscheduledEventFields((UnscheduledEvent) existingEvent, (UnscheduledCreateEventDto) createEventDTO);
             }
             return eventMapper.eventToDto(eventRepository.save(existingEvent));
         });
@@ -114,19 +111,19 @@ public class EventService {
         }).orElse(false);
     }
 
-    private void updateCommonFields(Event existingEvent, EventDto eventDTO) {
-        existingEvent.setDescription(eventDTO.getDescription());
-        existingEvent.setSeverity(eventDTO.getSeverity());
-        existingEvent.setStatus(eventDTO.getStatus());
+    private void updateCommonFields(Event existingEvent, CreateEventDto createEventDTO) {
+        existingEvent.setDescription(createEventDTO.getDescription());
+        existingEvent.setSeverity(createEventDTO.getSeverity());
+        existingEvent.setStatus(createEventDTO.getStatus());
     }
 
-    private void updateScheduledEventFields(ScheduledEvent existingEvent, ScheduledEventDto scheduledEventDTO) {
+    private void updateScheduledEventFields(ScheduledEvent existingEvent, ScheduledCreateEventDto scheduledEventDTO) {
         existingEvent.setNeighborhood(scheduledEventDTO.getNeighborhood());
         existingEvent.setRegulationDate(scheduledEventDTO.getRegulationDate());
         existingEvent.setRegulationNumber(scheduledEventDTO.getRegulationNumber());
     }
 
-    private void updateUnscheduledEventFields(UnscheduledEvent existingEvent, UnscheduledEventDto unscheduledEventDTO) {
+    private void updateUnscheduledEventFields(UnscheduledEvent existingEvent, UnscheduledCreateEventDto unscheduledEventDTO) {
         existingEvent.setCategory(unscheduledEventDTO.getCategory());
     }
 
@@ -134,41 +131,35 @@ public class EventService {
         if (event.getRegistrationDateTime() == null) {
             event.setRegistrationDateTime(LocalDateTime.now());
         }
-        if (event.getSeverity() == null) {
-            event.setSeverity(DEFAULT_SEVERITY);
-        }
-        if (event.getStatus() == null) {
-            event.setStatus(DEFAULT_STATUS);
-        }
     }
 
-    public List<ScheduledEventDto> getScheduledEventsByDate(LocalDate date) {
+    public List<ScheduledCreateEventDto> getScheduledEventsByDate(LocalDate date) {
         return scheduledEventDAO.findScheduledEventsByDate(date).stream()
                 .map(eventMapper::scheduledEventToDto)
                 .collect(Collectors.toList());
     }
 
-    public List<ScheduledEventDto> getScheduledEventsByNeighborhood(String neighborhood) {
+    public List<ScheduledCreateEventDto> getScheduledEventsByNeighborhood(String neighborhood) {
         return scheduledEventDAO.findScheduledEventsByNeighborhood(neighborhood).stream()
                 .map(eventMapper::scheduledEventToDto)
                 .collect(Collectors.toList());
     }
 
-    public List<EventDto> getEventsByStatus(String status) {
+    public List<CreateEventDto> getEventsByStatus(String status) {
         Status eventStatus = Status.valueOf(status.toUpperCase());
         return eventDAO.findEventsByStatus(eventStatus).stream()
                 .map(eventMapper::eventToDto)
                 .collect(Collectors.toList());
     }
 
-    public List<EventDto> getEventsBySeverity(String severity) {
+    public List<CreateEventDto> getEventsBySeverity(String severity) {
         Severity eventSeverity = Severity.valueOf(severity.toUpperCase());
         return eventDAO.findEventsBySeverity(eventSeverity).stream()
                 .map(eventMapper::eventToDto)
                 .collect(Collectors.toList());
     }
 
-    public List<UnscheduledEventDto> getUnscheduledEventsByCategory(String category) {
+    public List<UnscheduledCreateEventDto> getUnscheduledEventsByCategory(String category) {
         return unscheduledEventDAO.findUnscheduledEventsByCategory(category).stream()
                 .map(eventMapper::unscheduledEventToDto)
                 .collect(Collectors.toList());

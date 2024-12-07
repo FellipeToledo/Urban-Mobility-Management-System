@@ -1,8 +1,8 @@
 package com.azvtech.event_service.mapper;
 
-import com.azvtech.event_service.dto.EventDto;
-import com.azvtech.event_service.dto.ScheduledEventDto;
-import com.azvtech.event_service.dto.UnscheduledEventDto;
+import com.azvtech.event_service.dto.CreateEventDto;
+import com.azvtech.event_service.dto.ScheduledCreateEventDto;
+import com.azvtech.event_service.dto.UnscheduledCreateEventDto;
 import com.azvtech.event_service.model.Event;
 import com.azvtech.event_service.model.Roadblock;
 import com.azvtech.event_service.model.ScheduledEvent;
@@ -13,20 +13,20 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    EventDto eventToDto(Event event);
+    CreateEventDto eventToDto(Event event);
 
     Roadblock roadblockToDto (Roadblock roadblock);
 
-    ScheduledEventDto scheduledEventToDto(ScheduledEvent scheduledEvent);
+    ScheduledCreateEventDto scheduledEventToDto(ScheduledEvent scheduledEvent);
 
-    UnscheduledEventDto unscheduledEventToDto(UnscheduledEvent unscheduledEvent);
+    UnscheduledCreateEventDto unscheduledEventToDto(UnscheduledEvent unscheduledEvent);
 
     @Mapping(target = "id", ignore = true) // Assuming we create a new entity with some generated ID.
-    Event eventToEntity(EventDto eventDTO);
+    Event eventToEntity(CreateEventDto createEventDTO);
 
     @Mapping(target = "id", ignore = true)
-    ScheduledEvent scheduledEventToEntity(ScheduledEventDto scheduledEventDTO);
+    ScheduledEvent scheduledEventToEntity(ScheduledCreateEventDto scheduledEventDTO);
 
     @Mapping(target = "id", ignore = true)
-    UnscheduledEvent unscheduledEventToEntity(UnscheduledEventDto unscheduledEventDTO);
+    UnscheduledEvent unscheduledEventToEntity(UnscheduledCreateEventDto unscheduledEventDTO);
 }

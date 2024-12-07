@@ -1,17 +1,16 @@
 package com.azvtech.event_service.model;
 
-import jakarta.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -19,11 +18,9 @@ import java.time.LocalDateTime;
 public class ScheduledEvent extends Event{
 
     @Column(nullable = false)
-    private Integer regulationNumber;
+    private int regulationNumber;
 
     @Column(nullable = false)
     private LocalDate regulationDate;
 
-    @Column(nullable = false)
-    private String neighborhood;
 }
