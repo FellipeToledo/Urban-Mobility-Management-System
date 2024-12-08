@@ -21,25 +21,25 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RoadblockDto {
 
-    @NotNull(message = "Road cannot be null")
-    @NotBlank(message = "Road cannot be blank")
-    @Size(min = 5, max = 25, message = "Road must be between 5 and 25 characters")
+    @NotNull(message = "A via não pode ser nula")
+    @NotBlank(message = "A via não pode estar em branco")
+    @Size(min = 5, max = 25, message = "A via deve ter entre 5 e 25 caracteres")
     private String road;
 
-    @NotNull(message = "Start Road cannot be null")
-    @NotBlank(message = "Start Road cannot be blank")
-    @Size(min = 5, max = 25, message = "Start Road must be between 5 and 25 characters")
+    @NotNull(message = "A via inicial não pode ser nula")
+    @NotBlank(message = "A via inicial não pode estar em branco")
+    @Size(min = 5, max = 25, message = "A via inicial deve ter entre 5 e 25 caracteres")
     private String startRoad;
 
-    @NotNull(message = "End Road cannot be null")
-    @NotBlank(message = "End Road cannot be blank")
-    @Size(min = 5, max = 25, message = "End Road must be between 5 and 25 characters")
+    @NotNull(message = "O End Road não pode ser nulo")
+    @NotBlank(message = "O End Road não pode estar em branco")
+    @Size(min = 5, max = 25, message = "O End Road deve ter entre 5 e 25 caracteres")
     private String endRoad;
 
-    @NotNull(message = "Start Date Time cannot be null")
+    @NotNull(message = "A data e a hora inicial  não podem ser nulas")
     private LocalDateTime startDateTime;
 
-    @NotNull(message = "End Date Time cannot be null")
+    @NotNull(message = "A data e a hora final  não podem ser nulas")
     private LocalDateTime endDateTime;
 
     public void setRoad(String road) {

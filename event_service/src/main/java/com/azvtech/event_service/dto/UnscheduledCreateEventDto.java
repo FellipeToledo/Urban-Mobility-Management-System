@@ -2,6 +2,7 @@ package com.azvtech.event_service.dto;
 
 import com.azvtech.event_service.enums.Cause;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,6 +18,7 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UnscheduledCreateEventDto extends CreateEventDto {
 
-    @NotNull(message = "Category cannot be null")
+    @NotNull(message = "A causa não pode ser nula")
+    @JsonProperty("cause")
     private Cause cause;
 }

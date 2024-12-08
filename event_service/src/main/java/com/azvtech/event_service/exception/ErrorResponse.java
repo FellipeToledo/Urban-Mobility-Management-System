@@ -24,4 +24,14 @@ public class ErrorResponse {
         this.errors = errors;
         this.timestamp = LocalDateTime.now();
     }
+
+    @Override
+    public String toString() {
+        return "ErrorResponse{" +
+                "status=" + status +
+                ", message='" + message + '\'' +
+                ", errors=" + errors +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }

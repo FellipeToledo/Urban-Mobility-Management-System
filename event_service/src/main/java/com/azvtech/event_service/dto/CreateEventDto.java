@@ -22,24 +22,24 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateEventDto {
 
-    @NotNull(message = "Description cannot be null")
-    @Size(min = 5, max = 100, message = "Description must be between 5 and 100 characters")
-    @NotBlank(message = "Description cannot be blank")
+    @NotNull(message = "A descrição não pode ser nula")
+    @Size(min = 5, max = 100, message = "A descrição deve ter entre 5 e 100 caracteres")
+    @NotBlank(message = "A descrição não pode estar em branco")
     private String description;
 
-    @NotNull(message = "Neighborhood cannot be null")
-    @NotBlank(message = "Neighborhood cannot be blank")
-    @Size(min = 3, max = 25, message = "Neighborhood must be between 5 and 25 characters")
+    @NotNull(message = "O bairro não pode ser nulo")
+    @NotBlank(message = "O bairro não pode estar em branco")
+    @Size(min = 3, max = 25, message = "O bairro deve ter entre 5 e 25 caracteres")
     private String neighborhood;
 
-    @NotNull(message = "Severity cannot be null")
+    @NotNull(message = "A criticidade não pode ser nula")
     private Severity severity;
 
-    @NotNull(message = "Status cannot be null")
+    @NotNull(message = "Status não pode ser nulo")
     private Status status;
 
     @ElementCollection
-    @NotNull(message = "Roadblocks cannot be null")
+    @NotNull(message = "Os bloqueios não podem ser nulos")
     private List<@Valid RoadblockDto> roadblocks;
 
     public void setDescription(String description) {

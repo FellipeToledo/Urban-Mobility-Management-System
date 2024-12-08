@@ -10,6 +10,7 @@ import java.util.Map;
  * Represents the causes of events in the urban mobility system.
  * @author Fellipe Toledo
  */
+
 public enum Cause {
     ACCIDENT("Acidente"),
     CONSTRUCTION("Obra"),
