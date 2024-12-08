@@ -16,10 +16,10 @@ import java.time.LocalDate;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ScheduledCreateEventDto extends CreateEventDto {
 
-    @NotNull(message = "Regulation Number cannot be null")
-    @Positive(message = "Regulation Number must be a positive number")
+    @NotNull(message = "O número do regulamento não pode ser nulo")
+    @Positive(message = "O número do regulamento deve ser um número positivo")
     private int regulationNumber;
 
-    @NotNull(message = "Regulation date cannot be null")
+    @NotNull(message = "A data do regulamento não pode ser nula")
     private LocalDate regulationPublicationDate;
 }
