@@ -1,6 +1,8 @@
 package com.azvtech.event_service.exception;
 
 import com.azvtech.event_service.enums.Cause;
+import com.azvtech.event_service.enums.Severity;
+import com.azvtech.event_service.enums.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,13 +11,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Arrays;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Fellipe Toledo
@@ -52,26 +50,20 @@ public class GlobalExceptionHandler {
 
         log.debug("Received error message: {}", errorMessage);
 
-        if (errorMessage != null && errorMessage.startsWith("Invalid Cause:")) {
-            String invalidValue = errorMessage.replace("Invalid Cause:", "").trim();
-
-            StringBuilder formattedError = new StringBuilder();
-            formattedError.append("Invalid value '").append(invalidValue).append("'. ");
-            formattedError.append("Allowed values are: [");
-
-            Cause[] causes = Cause.values();
-            for (int i = 0; i < causes.length; i++) {
-                formattedError.append(causes[i].getDisplayName());
-                if (i < causes.length - 1) {
-                    formattedError.append(", ");
-                }
+        // Handle different enum types
+        if (errorMessage != null) {
+            if (errorMessage.startsWith("Invalid Cause:")) {
+                handleEnumError(errors, "cause", errorMessage, "Invalid Cause:", Cause.values());
             }
-            formattedError.append("]");
-
-            log.debug("Formatted error: {}", formattedError.toString());
-            errors.put("cause", formattedError.toString());
-        } else {
-            errors.put("error", errorMessage);
+            else if (errorMessage.startsWith("Invalid Status:")) {
+                handleEnumError(errors, "status", errorMessage, "Invalid Status:", Status.values());
+            }
+            else if (errorMessage.startsWith("Invalid Severity:")) {
+                handleEnumError(errors, "severity", errorMessage, "Invalid Severity:", Severity.values());
+            }
+            else {
+                errors.put("error", errorMessage);
+            }
         }
 
         ErrorResponse errorResponse = new ErrorResponse(
@@ -83,6 +75,43 @@ public class GlobalExceptionHandler {
         log.debug("Final response: {}", errorResponse);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    private void handleEnumError(
+            Map<String, String> errors,
+            String fieldName,
+            String errorMessage,
+            String prefix,
+            Enum<?>[] enumValues) {
+
+        String invalidValue = errorMessage.replace(prefix, "").trim();
+        StringBuilder formattedError = new StringBuilder();
+        formattedError.append("Invalid value '").append(invalidValue).append("'. ");
+        formattedError.append("Allowed values are: [");
+
+        // Get display names using reflection
+        for (int i = 0; i < enumValues.length; i++) {
+            try {
+                Method getDisplayName = enumValues[i].getClass().getMethod("getDisplayName");
+                String displayName = (String) getDisplayName.invoke(enumValues[i]);
+                formattedError.append(displayName);
+
+                if (i < enumValues.length - 1) {
+                    formattedError.append(", ");
+                }
+            } catch (Exception e) {
+                // Fallback to enum name if getDisplayName is not available
+                formattedError.append(enumValues[i].name());
+
+                if (i < enumValues.length - 1) {
+                    formattedError.append(", ");
+                }
+            }
+        }
+        formattedError.append("]");
+
+        log.debug("Formatted error for {}: {}", fieldName, formattedError);
+        errors.put(fieldName, formattedError.toString());
     }
 
 }
