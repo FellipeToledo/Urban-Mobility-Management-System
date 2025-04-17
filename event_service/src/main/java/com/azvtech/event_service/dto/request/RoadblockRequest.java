@@ -1,4 +1,4 @@
-package com.azvtech.event_service.dto;
+package com.azvtech.event_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RoadblockDto {
+public class RoadblockRequest {
 
     @NotNull(message = "A via não pode ser nula")
     @NotBlank(message = "A via não pode estar em branco")

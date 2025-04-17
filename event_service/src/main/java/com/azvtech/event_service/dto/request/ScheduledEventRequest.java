@@ -1,4 +1,4 @@
-package com.azvtech.event_service.dto;
+package com.azvtech.event_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.*;
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ScheduledCreateEventDto extends CreateEventDto {
+public class ScheduledEventRequest extends EventRequest {
 
     @NotNull(message = "O número do regulamento não pode ser nulo")
     @Positive(message = "O número do regulamento deve ser um número positivo")

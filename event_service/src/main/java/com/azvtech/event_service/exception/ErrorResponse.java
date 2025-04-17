@@ -1,5 +1,6 @@
 package com.azvtech.event_service.exception;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,29 +10,29 @@ import java.util.Map;
 /**
  * @author Fellipe Toledo
  */
+
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
-
     private int status;
+    private String error;
     private String message;
-    private Map<String, String> errors;
+    private String path;
+    private Map<String, String> details;
     private LocalDateTime timestamp;
 
-    public ErrorResponse(int status, String message, Map<String, String> errors) {
+    // Construtores para diferentes cenários
+    public ErrorResponse(int status, String error, String message, String path) {
         this.status = status;
+        this.error = error;
         this.message = message;
-        this.errors = errors;
+        this.path = path;
         this.timestamp = LocalDateTime.now();
     }
 
-    @Override
-    public String toString() {
-        return "ErrorResponse{" +
-                "status=" + status +
-                ", message='" + message + '\'' +
-                ", errors=" + errors +
-                ", timestamp=" + timestamp +
-                '}';
+    public ErrorResponse(int status, String error, String message, String path, Map<String, String> details) {
+        this(status, error, message, path);
+        this.details = details;
     }
 }

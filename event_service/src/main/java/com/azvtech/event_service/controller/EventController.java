@@ -1,15 +1,22 @@
 package com.azvtech.event_service.controller;
 
-import com.azvtech.event_service.dto.CreateEventDto;
-import com.azvtech.event_service.dto.ScheduledCreateEventDto;
-import com.azvtech.event_service.dto.UnscheduledCreateEventDto;
+import com.azvtech.event_service.dto.request.EventRequest;
+import com.azvtech.event_service.dto.request.ScheduledEventRequest;
+import com.azvtech.event_service.dto.request.UnscheduledEventRequest;
+import com.azvtech.event_service.dto.response.RoadblockResponse;
+import com.azvtech.event_service.dto.response.detail.EventDetailResponse;
+import com.azvtech.event_service.dto.response.list.EventListResponse;
 import com.azvtech.event_service.enums.Cause;
+import com.azvtech.event_service.exception.ErrorResponse;
 import com.azvtech.event_service.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,204 +27,114 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/event")
+@RequiredArgsConstructor
 public class EventController {
     private static final String LOCATION_HEADER_PREFIX = "/api/resource/";
     private final EventService eventService;
 
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
-
-    @Operation(summary = "Criar um novo evento programado")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Evento criado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos para criar o evento")
-    })
     @PostMapping("/scheduled")
+    @Operation(summary = "Create a new scheduled event")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Event created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     public ResponseEntity<Boolean> createScheduledEvent(
-            @Valid @RequestBody ScheduledCreateEventDto scheduledEvent) {
-        return createEventResponse(eventService.createScheduledEvent(scheduledEvent));
+            @Valid @RequestBody ScheduledEventRequest request) {
+        return buildCreatedResponse(eventService.createScheduledEvent(request));
     }
 
-    @Operation(summary = "Criar um novo evento não programado")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Evento criado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos para criar o evento")
-    })
     @PostMapping("/unscheduled")
-    public ResponseEntity<UnscheduledCreateEventDto> createUnscheduledEvent(
-            @Valid @RequestBody UnscheduledCreateEventDto unscheduledEvent) {
-        return createEventResponse(eventService.createUnscheduledEvent(unscheduledEvent));
-    }
-
-    private <T> ResponseEntity<T> createEventResponse(T event) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .header("Location", LOCATION_HEADER_PREFIX + event)
-                .body(event);
-    }
-
-    @Operation(summary = "Buscar todos os eventos")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de eventos recuperada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Nenhum evento encontrado")
+    @Operation(summary = "Create a new unscheduled event")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Event created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-    @GetMapping("/all")
-    public ResponseEntity<List<CreateEventDto>> getAllEvents() {
-        List<CreateEventDto> events = eventService.getAllEvents();
-        return events.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(events);
+    public ResponseEntity<UnscheduledEventRequest> createUnscheduledEvent(
+            @Valid @RequestBody UnscheduledEventRequest request) {
+        return buildCreatedResponse(eventService.createUnscheduledEvent(request));
     }
 
-    @Operation(summary = "Buscar eventos por bloqueio de vias")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Eventos recuperados com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Nenhum evento encontrado")
+    @GetMapping
+    @Operation(summary = "Get all events")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Events retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "No events found")
     })
+    public ResponseEntity<List<EventListResponse>> getAllEvents() {
+        List<EventListResponse> events = eventService.getAllEvents();
+        return buildListResponse(events);
+    }
+
     @GetMapping("/roadblock/{road}")
-    public ResponseEntity<List<CreateEventDto>> getEventsByRoadblock(
-            @Parameter(description = "Nome da via") @PathVariable String road) {
-        List<CreateEventDto> events = eventService.getEventsByRoadblock(road);
-        if (events.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(events);
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(events);
-        }
+    @Operation(summary = "Get events by roadblock")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Events retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "No events found for this roadblock")
+    })
+    public ResponseEntity<List<EventRequest>> getEventsByRoadblock(
+            @Parameter(description = "Road name") @PathVariable String road) {
+        List<EventRequest> events = eventService.getEventsByRoadblock(road);
+        return buildListResponse(events);
     }
 
-    @Operation(summary = "Buscar um evento pelo ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Evento encontrado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    @GetMapping("/roadblocks")
+    @Operation(summary = "Get all roadblocks")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Roadblocks retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "No roadblocks found")
     })
+    public ResponseEntity<List<RoadblockResponse>> getAllRoadblocks() {
+        List<RoadblockResponse> roadblocks = eventService.getAllRoadblocks();
+        return buildListResponse(roadblocks);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<CreateEventDto> getEventById(
-            @Parameter(description = "ID do evento a ser buscado")
-            @PathVariable Long id) {
-        Optional<CreateEventDto> eventDTO = eventService.getEventById(id);
-        return eventDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @Operation(summary = "Atualizar um evento programado existente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Evento atualizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    @Operation(summary = "Get event details by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Event details retrieved"),
+            @ApiResponse(responseCode = "404", description = "Event not found")
     })
-    @PutMapping("/scheduled/{id}")
-    public ResponseEntity<?> updateScheduledEvent(
-            @Parameter(description = "ID do evento a ser atualizado")
-            @PathVariable Long id,
-            @RequestBody ScheduledCreateEventDto scheduledEvent) {
-        return updateEventResponse(id, scheduledEvent, "EventoProgramado");
+    public ResponseEntity<EventDetailResponse> getEventDetail(
+            @Parameter(description = "Event ID") @PathVariable Long id) {
+        return ResponseEntity.ok(eventService.getEventDetail(id));
     }
 
-    @Operation(summary = "Atualizar um evento não programado existente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Evento atualizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an event")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Event updated"),
+            @ApiResponse(responseCode = "404", description = "Event not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @PutMapping("/unscheduled/{id}")
-    public ResponseEntity<?> updateUnscheduledEvent(
-            @Parameter(description = "ID do evento a ser atualizado")
-            @PathVariable Long id,
-            @RequestBody UnscheduledCreateEventDto unscheduledEvent) {
-        return updateEventResponse(id, unscheduledEvent, "EventoNaoProgramado");
+    public ResponseEntity<EventRequest> updateEvent(
+            @Parameter(description = "Event ID") @PathVariable Long id,
+            @Valid @RequestBody EventRequest request) {
+        return ResponseEntity.ok(eventService.updateEvent(id, request));
     }
 
-    private <T> ResponseEntity<?> updateEventResponse(Long id, T event, String eventType) {
-        try {
-            Optional<?> updatedEvent = eventService.updateEventFields(id, (CreateEventDto) event);
-            return updatedEvent.isPresent()
-                    ? ResponseEntity.ok(updatedEvent.get())
-                    : ResponseEntity.notFound().build();
-        } catch (ClassCastException e) {
-            return ResponseEntity.badRequest().body("O evento com o ID fornecido não é do tipo " + eventType);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erro ao atualizar o evento: " + e.getMessage());
-        }
-    }
-
-    @Operation(summary = "Deletar um evento")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Evento deletado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
-    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteEvent(
-            @Parameter(description = "ID do evento a ser deletado")
-            @PathVariable Long id) {
-        return eventService.deleteEvent(id) ?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.notFound().build();
-    }
-
-    @Operation(summary = "Buscar eventos programados por data")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de eventos programados recuperada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Nenhum evento programado encontrado")
+    @Operation(summary = "Delete an event")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Event deleted"),
+            @ApiResponse(responseCode = "404", description = "Event not found")
     })
-    @GetMapping("/scheduled/date/{date}")
-    public ResponseEntity<List<ScheduledCreateEventDto>> findScheduledEventsByDate(
-            @Parameter(description = "Data do evento programado")
-            @PathVariable String date) {
-        List<ScheduledCreateEventDto> events = eventService.getScheduledEventsByDate(LocalDate.parse(date));
-        return events.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(events);
+    public ResponseEntity<Void> deleteEvent(
+            @Parameter(description = "Event ID") @PathVariable Long id) {
+        eventService.deleteEvent(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Buscar eventos programados por bairro")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de eventos programados recuperada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Nenhum evento programado encontrado")
-    })
-    @GetMapping("/scheduled/neighborhood/{neighborhood}")
-    public ResponseEntity<List<ScheduledCreateEventDto>> findScheduledEventsByNeighborhood(
-            @Parameter(description = "Bairro do evento programado")
-            @PathVariable String neighborhood) {
-        List<ScheduledCreateEventDto> events = eventService.getScheduledEventsByNeighborhood(neighborhood);
-        return events.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(events);
+    // Métodos auxiliares privados
+    private <T> ResponseEntity<T> buildCreatedResponse(T body) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("Location", LOCATION_HEADER_PREFIX + body)
+                .body(body);
     }
 
-    @GetMapping("/unscheduled/cause/{cause}")
-    public ResponseEntity<List<UnscheduledCreateEventDto>> findUnscheduledEventsByCategory(
-            @Parameter(description = "Causa do evento não programado")
-            @PathVariable Cause cause) {
-        List<UnscheduledCreateEventDto> events = eventService.getUnscheduledEventsByCause(cause);
-        return events.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(events);
-    }
-
-    @Operation(summary = "Buscar eventos por status")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de eventos recuperada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Nenhum evento encontrado")
-    })
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<CreateEventDto>> findEventsByStatus(
-            @Parameter(description = "Status do evento")
-            @PathVariable String status) {
-        return findEventsResponse(eventService.getEventsByStatus(status), "status inválido");
-    }
-
-    @GetMapping("/severity/{severity}")
-    public ResponseEntity<List<CreateEventDto>> findEventsBySeverity(
-            @Parameter(description = "Severidade do evento")
-            @PathVariable String severity) {
-        return findEventsResponse(eventService.getEventsBySeverity(severity), "severidade inválida");
-    }
-
-    private ResponseEntity<List<CreateEventDto>> findEventsResponse(List<CreateEventDto> events, String invalidArgumentError) {
-        if (!events.isEmpty()) {
-            return ResponseEntity.ok(events);
-        } else if (invalidArgumentError != null) {
-            return ResponseEntity.badRequest().body(null);
-        } else {
-            return ResponseEntity.noContent().build();
-        }
+    private <T> ResponseEntity<List<T>> buildListResponse(List<T> list) {
+        return list.isEmpty() ?
+                ResponseEntity.notFound().build() :
+                ResponseEntity.ok(list);
     }
 }

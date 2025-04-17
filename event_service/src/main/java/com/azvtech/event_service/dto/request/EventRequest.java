@@ -1,4 +1,4 @@
-package com.azvtech.event_service.dto;
+package com.azvtech.event_service.dto.request;
 
 import com.azvtech.event_service.enums.Severity;
 import com.azvtech.event_service.enums.Status;
@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateEventDto {
+public class EventRequest {
 
     @NotNull(message = "A descrição não pode ser nula")
     @Size(min = 5, max = 100, message = "A descrição deve ter entre 5 e 100 caracteres")
@@ -40,7 +40,7 @@ public class CreateEventDto {
 
     @ElementCollection
     @NotNull(message = "Os bloqueios não podem ser nulos")
-    private List<@Valid RoadblockDto> roadblocks;
+    private List<@Valid RoadblockRequest> roadblocks;
 
     public void setDescription(String description) {
         this.description = description.trim().replaceAll("\\s+", " ");
