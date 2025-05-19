@@ -1,5 +1,6 @@
 package com.azvtech.event_service.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,9 +38,11 @@ public class RoadblockRequest {
     private String endRoad;
 
     @NotNull(message = "A data e a hora inicial  não podem ser nulas")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDateTime;
 
     @NotNull(message = "A data e a hora final  não podem ser nulas")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDateTime;
 
     public void setRoad(String road) {

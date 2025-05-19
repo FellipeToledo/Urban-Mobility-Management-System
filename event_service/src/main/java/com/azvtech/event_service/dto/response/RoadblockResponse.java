@@ -1,5 +1,6 @@
 package com.azvtech.event_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,6 @@ public class RoadblockResponse {
     private String road;
     private String startRoad;
     private String endRoad;
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
+    private String startDateTime;
+    private String endDateTime;
 }

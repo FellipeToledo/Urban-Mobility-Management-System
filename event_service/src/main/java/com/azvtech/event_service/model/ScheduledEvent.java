@@ -1,5 +1,6 @@
 package com.azvtech.event_service.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -21,6 +22,7 @@ public class ScheduledEvent extends Event{
     private int regulationNumber;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private LocalDate regulationPublicationDate;
 
 }

@@ -143,6 +143,16 @@ public class EventService {
         log.info("Deleted event with id: {}", id);
     }
 
+    @Transactional
+    public int deleteMultipleEntities(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("A lista de IDs não pode ser vazia");
+        }
+
+        return eventRepository.deleteAllByIdInBatch(ids);
+    }
+
+
     // Métodos auxiliares privados
     private List<Event> filterEventsByRoad(String road) {
         return eventRepository.findAll().stream()

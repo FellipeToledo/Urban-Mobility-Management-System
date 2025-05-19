@@ -22,7 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -123,6 +125,12 @@ public class EventController {
             @Parameter(description = "Event ID") @PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/multiples")
+    public ResponseEntity<Map<String, Integer>> deleteMultipleEntities(@RequestBody List<Long> ids) {
+        int deletedCount = eventService.deleteMultipleEntities(ids);
+        return ResponseEntity.ok(Collections.singletonMap("deletedCount", deletedCount));
     }
 
     // Métodos auxiliares privados

@@ -16,7 +16,7 @@ public enum Cause {
     CONSTRUCTION("Obra"),
     WEATHER("Condição Climática"),
     DEMONSTRATION("Manifestação"),
-    BREAKDOWN("Falha Técnica"),
+    PUBLIC_SAFETY("Segurança Pública"),
     OTHER("Outro");
 
     private final String displayName;

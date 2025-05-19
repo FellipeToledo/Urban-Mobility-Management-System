@@ -1,11 +1,13 @@
 package com.azvtech.event_service.dto.request;
 
+import com.azvtech.event_service.enums.Agency;
 import com.azvtech.event_service.enums.Severity;
 import com.azvtech.event_service.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.ElementCollection;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,10 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EventRequest {
+
+    @NotNull(message = "Os bloqueios não podem ser nulos")
+    @NotEmpty(message = "A lista não pode ser vazia")
+    private List<@Valid Agency> involvedAgencies;
 
     @NotNull(message = "A descrição não pode ser nula")
     @Size(min = 5, max = 100, message = "A descrição deve ter entre 5 e 100 caracteres")

@@ -1,8 +1,10 @@
 package com.azvtech.event_service.model;
 
+import com.azvtech.event_service.enums.Agency;
 import com.azvtech.event_service.enums.Severity;
 import com.azvtech.event_service.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -39,6 +41,12 @@ public class Event {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "event_agencies", joinColumns = @JoinColumn(name = "event_id"))
+    @Column(name = "agency")
+    private List<@Valid Agency> involvedAgencies;
 
     @Column(nullable = false)
     @ElementCollection
