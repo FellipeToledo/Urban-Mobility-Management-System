@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.sql.Date;
 import java.time.LocalDate;
 
 @Getter
@@ -22,6 +22,8 @@ public class ScheduledEventRequest extends EventRequest {
     private Integer regulationNumber;
 
     @NotNull(message = "A data do regulamento não pode ser nula")
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate regulationPublicationDate;
+
+    @NotNull(message = "A data de validação não pode ser nula")
+    private LocalDate regulationValidity;
 }

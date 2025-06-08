@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
 @Setter
 public class RoadblockResponse {
     private String road;
-    private String startRoad;
-    private String endRoad;
-    private String startDateTime;
-    private String endDateTime;
+    private String specification;
+    private String date;
+    private String dateTime;
+    private String category;
+
 }

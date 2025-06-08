@@ -10,6 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -27,32 +31,16 @@ public class RoadblockRequest {
     @Size(min = 5, max = 25, message = "A via deve ter entre 5 e 25 caracteres")
     private String road;
 
-    @NotNull(message = "A via inicial não pode ser nula")
-    @NotBlank(message = "A via inicial não pode estar em branco")
-    @Size(min = 5, max = 25, message = "A via inicial deve ter entre 5 e 25 caracteres")
-    private String startRoad;
+    @NotNull(message = "A especificação não pode ser nula")
+    @NotBlank(message = "A especificação não pode estar em branco")
+    @Size(min = 5, max = 500, message = "A especificação deve ter entre 5 e 500 caracteres")
+    private String specification;
 
-    @NotNull(message = "O End Road não pode ser nulo")
-    @NotBlank(message = "O End Road não pode estar em branco")
-    @Size(min = 5, max = 25, message = "O End Road deve ter entre 5 e 25 caracteres")
-    private String endRoad;
+    private LocalDate date;
 
-    @NotNull(message = "A data e a hora inicial  não podem ser nulas")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime startDateTime;
-
-    @NotNull(message = "A data e a hora final  não podem ser nulas")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endDateTime;
+    private LocalDateTime dateTime;
 
     public void setRoad(String road) {
         this.road = road.trim().replaceAll("\\s+", " ");
     }
-    public void setStartRoad(String startRoad) {
-        this.startRoad = startRoad.trim().replaceAll("\\s+", " ");
-    }
-    public void setEndRoad(String endRoad) {
-        this.endRoad = endRoad.trim().replaceAll("\\s+", " ");
-    }
-
 }

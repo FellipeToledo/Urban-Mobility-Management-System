@@ -9,4 +9,5 @@ import lombok.Setter;
 public class ScheduledEventResponse extends EventDetailResponse {
     private Integer regulationNumber;
     private String regulationPublicationDate;
+    private String regulationValidity;
 }

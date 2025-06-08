@@ -24,9 +24,13 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EventRequest {
 
-    @NotNull(message = "Os bloqueios não podem ser nulos")
-    @NotEmpty(message = "A lista não pode ser vazia")
+    @NotNull(message = "As lista de agências envolvidas não podem ser nulas")
+    @NotEmpty(message = "A lista de agências envolvidas não pode ser vazia")
     private List<@Valid Agency> involvedAgencies;
+
+    @NotNull(message = "A categoria não podem ser nulos")
+    @NotEmpty(message = "A categoria não pode ser vazia")
+    private String category;
 
     @NotNull(message = "A descrição não pode ser nula")
     @Size(min = 5, max = 100, message = "A descrição deve ter entre 5 e 100 caracteres")
@@ -45,7 +49,6 @@ public class EventRequest {
     private Status status;
 
     @ElementCollection
-    @NotNull(message = "Os bloqueios não podem ser nulos")
     private List<@Valid RoadblockRequest> roadblocks;
 
     public void setDescription(String description) {
