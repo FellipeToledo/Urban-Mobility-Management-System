@@ -20,75 +20,38 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    // Listagem
-    EventListResponse toListResponse(Event event);
+    //Listing (Entity → List DTO)
+    EventListResponse toEventListResponse(Event event);
 
-    // Detalhes
-
-    default EventDetailResponse toDetailResponse(Event event) {
+    // Details (Entity → Detail DTO)
+    default EventDetailResponse toEventDetailResponse(Event event) {
         if (event instanceof ScheduledEvent) {
-            return toScheduledResponse((ScheduledEvent) event);
+            return toScheduledEventResponse((ScheduledEvent) event);
         } else if (event instanceof UnscheduledEvent) {
-            return toUnscheduledResponse((UnscheduledEvent) event);
+            return toUnscheduledEventResponse((UnscheduledEvent) event);
         }
-        throw new IllegalArgumentException("Tipo de evento não suportado");
+        throw new IllegalArgumentException("Unsupported event type");
     }
 
+    // Specific types (Entity → Response DTO)
     @Mapping(target = "regulationNumber", source = "regulationNumber")
-    @Mapping(target = "regulationPublicationDate", source = "regulationPublicationDate")
-    ScheduledEventResponse toScheduledResponse(ScheduledEvent event);
+    ScheduledEventResponse toScheduledEventResponse(ScheduledEvent event);
 
     @Mapping(target = "cause", source = "cause")
-    UnscheduledEventResponse toUnscheduledResponse(UnscheduledEvent event);
+    UnscheduledEventResponse toUnscheduledEventResponse(UnscheduledEvent event);
 
-    // Requests → Entidades
-    Event fromRequest(EventRequest request);
-    ScheduledEvent fromScheduledRequest(ScheduledEventRequest request);
+    // Requests → Entities
+    Event fromEventRequest(EventRequest request);
+    ScheduledEvent fromScheduledEventRequest(ScheduledEventRequest request);
+    UnscheduledEvent fromUnscheduledEventRequest(UnscheduledEventRequest request);
 
     // Roadblocks
     RoadblockResponse toRoadblockResponse(Roadblock roadblock);
-    List<RoadblockResponse> mapRoadblocks(List<Roadblock> roadblocks);
+    List<RoadblockResponse> toRoadblockResponseList(List<Roadblock> roadblocks);
 
-    //TO  ENTITY
-    EventRequest eventToDto(Event event);
-    ScheduledEvent scheduledEventToEntity(ScheduledEventRequest scheduledEventDTO);
-    UnscheduledEvent unscheduledEventToEntity(UnscheduledEventRequest unscheduledEventDTO);
-
-    //TO REQUEST DTO
-    ScheduledEventRequest scheduledEventToDto(ScheduledEvent scheduledEvent);
-    UnscheduledEventRequest unscheduledEventToDto(UnscheduledEvent unscheduledEvent);
-
-   /* EventRequest eventToDto(Event event);
-    EventListResponse modelToDto(Event event);
-
-    default RoadblockResponse map(Roadblock roadblock) {
-        if (roadblock == null) {
-            return null;
-        }
-        RoadblockResponse dto = new RoadblockResponse();
-        dto.setRoad(roadblock.getRoad());
-        dto.setStartRoad(roadblock.getStartRoad());
-        dto.setEndRoad(roadblock.getEndRoad());
-        dto.setStartDateTime(roadblock.getStartDateTime());
-        dto.setEndDateTime(roadblock.getEndDateTime());
-        return dto;
-    }
-
-    Roadblock roadblockToDto (Roadblock roadblock);
-
-    ScheduledEventRequest scheduledEventToDto(ScheduledEvent scheduledEvent);
-
-    UnscheduledEventRequest unscheduledEventToDto(UnscheduledEvent unscheduledEvent);
-
-    @Mapping(target = "id", ignore = true) // Assuming we create a new entity with some generated ID.
-    Event eventToEntity(EventRequest eventRequest);
-
-    @Mapping(target = "id", ignore = true)
-    ScheduledEvent scheduledEventToEntity(ScheduledEventRequest scheduledEventDTO);
-
-    @Mapping(target = "id", ignore = true)
-    UnscheduledEvent unscheduledEventToEntity(UnscheduledEventRequest unscheduledEventDTO);
-
-    */
+    // Entities → Requests (for updates)
+    EventRequest toEventRequest(Event event);
+    ScheduledEventRequest toScheduledEventRequest(ScheduledEvent scheduledEvent);
+    UnscheduledEventRequest toUnscheduledEventRequest(UnscheduledEvent unscheduledEvent);
 
 }

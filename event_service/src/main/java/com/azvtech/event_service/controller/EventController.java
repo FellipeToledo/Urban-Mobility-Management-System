@@ -6,7 +6,6 @@ import com.azvtech.event_service.dto.request.UnscheduledEventRequest;
 import com.azvtech.event_service.dto.response.RoadblockResponse;
 import com.azvtech.event_service.dto.response.detail.EventDetailResponse;
 import com.azvtech.event_service.dto.response.list.EventListResponse;
-import com.azvtech.event_service.enums.Cause;
 import com.azvtech.event_service.exception.ErrorResponse;
 import com.azvtech.event_service.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,11 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/event")
@@ -133,7 +130,8 @@ public class EventController {
         return ResponseEntity.ok(Collections.singletonMap("deletedCount", deletedCount));
     }
 
-    // Métodos auxiliares privados
+    //
+    // Private helper methods
     private <T> ResponseEntity<T> buildCreatedResponse(T body) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", LOCATION_HEADER_PREFIX + body)

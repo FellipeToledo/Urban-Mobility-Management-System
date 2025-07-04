@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.azvtech.event_service.util.ErrorMessages.EVENT_NOT_FOUND;
 
@@ -45,7 +44,7 @@ public class EventService {
         List<Event> events = eventRepository.findAll();
         log.debug("Found {} events", events.size());
         return events.stream()
-                .map(eventMapper::toListResponse)
+                .map(eventMapper::toEventListResponse)
                 .toList();
     }
 
@@ -53,7 +52,7 @@ public class EventService {
     public List<EventRequest> getEventsByRoadblock(String road) {
         log.debug("Fetching events for road: {}", road);
         return filterEventsByRoad(road).stream()
-                .map(eventMapper::eventToDto)
+                .map(eventMapper::toEventRequest)
                 .toList();
     }
 
@@ -73,13 +72,13 @@ public class EventService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(EVENT_NOT_FOUND, id)));
 
         return event instanceof ScheduledEvent ?
-                eventMapper.toScheduledResponse((ScheduledEvent) event) :
-                eventMapper.toDetailResponse(event);
+                eventMapper.toScheduledEventResponse((ScheduledEvent) event) :
+                eventMapper.toEventDetailResponse(event);
     }
 
     public boolean createScheduledEvent(@Valid ScheduledEventRequest request) {
         log.debug("Creating scheduled event");
-        ScheduledEvent event = eventMapper.scheduledEventToEntity(request);
+        ScheduledEvent event = eventMapper.fromScheduledEventRequest(request);
         setDefaultValues(event);
         eventRepository.save(event);
         log.info("Created scheduled event with id: {}", event.getId());
@@ -88,11 +87,11 @@ public class EventService {
 
     public UnscheduledEventRequest createUnscheduledEvent(@Valid UnscheduledEventRequest request) {
         log.debug("Creating unscheduled event");
-        UnscheduledEvent event = eventMapper.unscheduledEventToEntity(request);
+        UnscheduledEvent event = eventMapper.fromUnscheduledEventRequest(request);
         setDefaultValues(event);
         UnscheduledEvent savedEvent = eventRepository.save(event);
         log.info("Created unscheduled event with id: {}", savedEvent.getId());
-        return eventMapper.unscheduledEventToDto(savedEvent);
+        return eventMapper.toUnscheduledEventRequest(savedEvent);
     }
 
     public EventRequest updateEvent(Long id, EventRequest request) {
@@ -116,7 +115,7 @@ public class EventService {
 
         Event updatedEvent = eventRepository.save(existingEvent);
         log.info("Updated event with id: {}", id);
-        return eventMapper.eventToDto(updatedEvent);
+        return eventMapper.toEventRequest(updatedEvent);
     }
 
     private void validateEventTypeMatch(Event existingEvent, EventRequest request) {
@@ -127,9 +126,9 @@ public class EventService {
                 !(request instanceof UnscheduledEventRequest);
 
         if (isScheduledMismatch || isUnscheduledMismatch) {
-            String eventType = existingEvent instanceof ScheduledEvent ? "programado" : "não-programado";
+            String eventType = existingEvent instanceof ScheduledEvent ? "programmed" : "unprogrammed";
             throw new EventTypeMismatchException(
-                    String.format("O evento com ID %d é %s e não pode ser atualizado com os atributos fornecidos",
+                    String.format("The event with ID %d is %s and cannot be updated with the given attributes",
                             existingEvent.getId(), eventType)
             );
         }
@@ -146,14 +145,13 @@ public class EventService {
     @Transactional
     public int deleteMultipleEntities(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
-            throw new IllegalArgumentException("A lista de IDs não pode ser vazia");
+            throw new IllegalArgumentException("The list of IDs cannot be empty");
         }
 
         return eventRepository.deleteAllByIdInBatch(ids);
     }
 
-
-    // Métodos auxiliares privados
+    // Private helper methods
     private List<Event> filterEventsByRoad(String road) {
         return eventRepository.findAll().stream()
                 .filter(event -> hasMatchingRoadblock(event, road))
@@ -169,14 +167,6 @@ public class EventService {
         if (event.getRegistrationDateTime() == null) {
             event.setRegistrationDateTime(LocalDateTime.now());
         }
-    }
-
-    public List<RoadblockResponse> getAllRoadblock() {
-        List<Event> events = eventRepository.findAll();
-        return events.stream()
-                .flatMap(event -> event.getRoadblocks().stream()
-                        .map(eventMapper::toRoadblockResponse))
-                .collect(Collectors.toList());
     }
 
     private void updateCommonFields(Event existingEvent, EventRequest eventRequest) {
