@@ -31,7 +31,7 @@
 
 ## Funcionalidades
 
-- [Event Service]()
+- [Event Service](https://github.com/FellipeToledo/Urban-Mobility-Management-System/blob/main/event_service/README.md)
 
 ## Instalação
 
