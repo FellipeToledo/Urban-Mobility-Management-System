@@ -1,0 +1,20 @@
+server:
+  port: 8090
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/events # Replace with your database details
+    username: ${POSTGRES_USER} # Replace with your PostgreSQL username
+    password: ${HM_POSTGRES_USER_KEY} # Replace with your PostgreSQL password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false # Prevents the "Open Session In View" anti-pattern
+    hibernate:
+      ddl-auto: validate # Options: none, update, create, create-drop, validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: false # Set to false in production for performance
+        format_sql: false # Formats SQL in logs for readability
+  # Optional: JMX for monitoring
+  jmx:
+    enabled: true

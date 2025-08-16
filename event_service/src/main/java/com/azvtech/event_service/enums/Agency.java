@@ -29,8 +29,8 @@ public enum Agency {
     }
 
     @JsonValue
-    public String getDisplayName() {
-        return displayName;
+    public String toValue() {
+        return this.name();
     }
 
     @JsonCreator

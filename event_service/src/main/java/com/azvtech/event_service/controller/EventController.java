@@ -53,7 +53,7 @@ public class EventController {
         return buildCreatedResponse(eventService.createUnscheduledEvent(request));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "Get all events")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Events retrieved successfully"),
